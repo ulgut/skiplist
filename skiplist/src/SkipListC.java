@@ -2,7 +2,7 @@ import java.util.NoSuchElementException;
 
 public class SkipListC<Key extends Comparable<Key>, Value> implements SkipList<Key, Value> {
 
-  private final double P = 0.5; // 50% chance we increase level.
+  private final double P = 1 / Math.E; // Optimal P-level
   private Node<Key, Value> root; // starting level 1 at smallest key. Acts as -inf
   private Node<Key, Value> cap; // mirror of root that acts as +inf.
   private int height; // root height
@@ -21,27 +21,28 @@ public class SkipListC<Key extends Comparable<Key>, Value> implements SkipList<K
     this.insert(keys, vals);
   }
 
-  public Value get(Key key) {
+  private Node<Key, Value> search(Key key) {
     Node<Key, Value> currentNode = root;
     int i = root.height() - 1;
 
     //clean up conditional?
     while (currentNode.getType() != Node.Type.cap && i >= 0) {
-      System.out.printf("i is %d \n", i);
       if (currentNode.nexts.get(i).isLess(key)) { //most common case
-        System.out.println("Current node: " + currentNode.getKey());
-        System.out.println("Next node: " + currentNode.nexts.get(i).getKey());
         currentNode = currentNode.nexts.get(i);
         comparisons++;
       } else if (currentNode.nexts.get(i).equals(key)) {
-        return currentNode.nexts.get(i).getValue();
+        comparisons++; //needed here?
+        return currentNode.nexts.get(i);
       } else { // if !(currentNode.nexts.get(i).isLess(key)) then go down a level
-        System.out.println("About to decrement i");
         comparisons++;
         i--;
       }
     }
     throw new NoSuchElementException("There is no value to match this Key: " + key);
+  }
+
+  public Value get(Key key) {
+    return search(key).getValue();
   }
 
   public void delete(Key key) {
@@ -62,7 +63,6 @@ public class SkipListC<Key extends Comparable<Key>, Value> implements SkipList<K
   public void insert(Key key, Value val) {
 
     int levels = levels();
-    System.out.println("Levels: " + levels);
 
     //Adjusts height of root / terminal . Same for cap
     increaseEnds(levels);
@@ -73,10 +73,7 @@ public class SkipListC<Key extends Comparable<Key>, Value> implements SkipList<K
 
     //building new node to proper height
     for (int i = 0; i < levels; i++) {
-      System.out.println("Built new node at level: " + i);
-
       newNode.nexts.add(new Node<Key, Value>());
-      System.out.println("newNode.nexts.size is " + newNode.nexts.size());
       newNode.prevs.add(new Node<Key, Value>());
     }
 

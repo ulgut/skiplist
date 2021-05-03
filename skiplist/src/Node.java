@@ -66,7 +66,6 @@ public class Node<Key extends Comparable<Key>, Value> {
     if (this.key == null)
       return false;
     else {
-      System.out.println("Equals is called | this.key = " + this.key + " | otherKey = " + otherKey + " | result = " + this.key.compareTo(otherKey));
       return this.key.compareTo(otherKey) == 0;
     }
   }
