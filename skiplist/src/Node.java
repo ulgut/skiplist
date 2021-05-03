@@ -19,12 +19,12 @@ public class Node<Key extends Comparable<Key>, Value> {
 
 
   public Node(ArrayList<Node<Key, Value>> prevs, ArrayList<Node<Key, Value>> nexts, Key key,
-              Value val, Type t) {
+              Value val, Type type) {
     this.prevs = prevs;
     this.nexts = nexts;
     this.key = key;
     this.value = val;
-    type = t;
+    this.type = type;
   }
 
   //initializes a Node with empty prevs and nexts
@@ -36,9 +36,6 @@ public class Node<Key extends Comparable<Key>, Value> {
     this(new ArrayList<Node<Key, Value>>(), new ArrayList<Node<Key, Value>>(), key, val, Type.node);
   }
 
-  //initializes a Node with empty prevs and nexts, and with key and val as null
-
-
   public Node(Type t) {
     this(null, null, t);
   }
@@ -48,19 +45,17 @@ public class Node<Key extends Comparable<Key>, Value> {
   }
 
   public boolean isLess(Node<Key, Value> other) {
-    if (this.type == Type.root) {
+    if (this.type == Type.root)
       return true;
-    } else if (this.type == Type.cap) {
+    else if (this.type == Type.cap)
       return false;
-    } else {
+    else
       return this.key.compareTo(other.key) < 0;
-    }
   }
 
   public int height() {
     return nexts.size();
   }
-
 
   //rewrite with recursion
   @Override
