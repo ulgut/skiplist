@@ -45,8 +45,19 @@ public class SkipListC<Key extends Comparable<Key>, Value> implements SkipList<K
     return search(key).getValue();
   }
 
+  //should we delete multiples? Should we allow for multiples at all?
   public void delete(Key key) {
-    return;
+    Node<Key, Value> node = search(key);
+
+    //working up linking the before and after nodes together
+    for (int i = 0; i < node.nexts.size(); i++) {
+      Node<Key, Value> beforeNode = node.prevs.get(i);
+      Node<Key, Value> afterNode = node.nexts.get(i);
+
+      beforeNode.nexts.set(i, afterNode);
+      afterNode.prevs.set(i, beforeNode);
+    }
+    n--;
   }
 
   private void increaseEnds(int levels) {
@@ -171,5 +182,12 @@ public class SkipListC<Key extends Comparable<Key>, Value> implements SkipList<K
     System.out.println("Testing out get(700): " + sl2.get(400));
     System.out.printf("There were %d comparisons in the search", sl2.comparisons);
     sl2.comparisons = 0;
+
+    System.out.println("\n\n---- About to Delete Key = 400 ---\n");
+
+    sl2.delete(400);
+    System.out.println(sl2);
+    // System.out.println(sl2.get(400));
+    System.out.println("sl2 size: " + sl2.size());
   }
 }
