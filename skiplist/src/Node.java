@@ -53,6 +53,24 @@ public class Node<Key extends Comparable<Key>, Value> {
       return this.key.compareTo(other.key) < 0;
   }
 
+  public boolean isLess(Key otherKey) {
+    if (this.type == Type.root)
+      return true;
+    else if (this.type == Type.cap)
+      return false;
+    else
+      return this.key.compareTo(otherKey) < 0;
+  }
+
+  public boolean equals(Key otherKey) {
+    if (this.key == null)
+      return false;
+    else {
+      System.out.println("Equals is called | this.key = " + this.key + " | otherKey = " + otherKey + " | result = " + this.key.compareTo(otherKey));
+      return this.key.compareTo(otherKey) == 0;
+    }
+  }
+
   public int height() {
     return nexts.size();
   }
@@ -96,4 +114,5 @@ public class Node<Key extends Comparable<Key>, Value> {
   public Type getType() {
     return type;
   }
+
 }

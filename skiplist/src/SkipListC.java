@@ -1,3 +1,5 @@
+import java.util.NoSuchElementException;
+
 public class SkipListC<Key extends Comparable<Key>, Value> implements SkipList<Key, Value> {
 
   private final double P = 0.5; // 50% chance we increase level.
@@ -5,6 +7,7 @@ public class SkipListC<Key extends Comparable<Key>, Value> implements SkipList<K
   private Node<Key, Value> cap; // mirror of root that acts as +inf.
   private int height; // root height
   private int n;
+  private int comparisons = 0;
 
   public SkipListC() { // initialize from a single key,value pair
     this.root = new Node<Key, Value>(Node.Type.root);
@@ -19,20 +22,33 @@ public class SkipListC<Key extends Comparable<Key>, Value> implements SkipList<K
   }
 
   public Value get(Key key) {
-    return null;
+    Node<Key, Value> currentNode = root;
+    int i = root.height() - 1;
+
+    //clean up conditional?
+    while (currentNode.getType() != Node.Type.cap && i >= 0) {
+      System.out.printf("i is %d \n", i);
+      if (currentNode.nexts.get(i).isLess(key)) { //most common case
+        System.out.println("Current node: " + currentNode.getKey());
+        System.out.println("Next node: " + currentNode.nexts.get(i).getKey());
+        currentNode = currentNode.nexts.get(i);
+        comparisons++;
+      } else if (currentNode.nexts.get(i).equals(key)) {
+        return currentNode.nexts.get(i).getValue();
+      } else { // if !(currentNode.nexts.get(i).isLess(key)) then go down a level
+        System.out.println("About to decrement i");
+        comparisons++;
+        i--;
+      }
+    }
+    throw new NoSuchElementException("There is no value to match this Key: " + key);
   }
 
   public void delete(Key key) {
     return;
   }
 
-
-  public void insert(Key key, Value val) {
-
-    int levels = levels();
-    System.out.println("Levels: " + levels);
-
-    //Adjusts height of root / terminal . Make its own method . Same for cap
+  private void increaseEnds(int levels) {
     while (levels > root.height()) {
       root.nexts.add(new Node<>());
       cap.prevs.add(new Node<>());
@@ -40,8 +56,17 @@ public class SkipListC<Key extends Comparable<Key>, Value> implements SkipList<K
       //linking the root and cap
       root.nexts.set(root.nexts.size() - 1, cap);
       cap.prevs.set(root.nexts.size() - 1, root);
-
     }
+  }
+
+  public void insert(Key key, Value val) {
+
+    int levels = levels();
+    System.out.println("Levels: " + levels);
+
+    //Adjusts height of root / terminal . Same for cap
+    increaseEnds(levels);
+
 
     //creating new node
     Node<Key, Value> newNode = new Node<Key, Value>(key, val);
@@ -57,10 +82,11 @@ public class SkipListC<Key extends Comparable<Key>, Value> implements SkipList<K
 
     int i = levels - 1;
 
-    //builds of a vertical stack of nodes from top to bottom and links them forward and back progressivley
+    //builds of a vertical stack of nodes from top to bottom and links them forward and back progressively
     while (i >= 0) {
       Node<Key, Value> backNode = root;
 
+      //clean up conditional
       while (i < backNode.height() && backNode.nexts.get(i) != cap && backNode.nexts.get(i).isLess(newNode)) {
         backNode = backNode.nexts.get(i);
       }
@@ -103,7 +129,7 @@ public class SkipListC<Key extends Comparable<Key>, Value> implements SkipList<K
 
 
   public boolean isEmpty() {
-    return false;
+    return n == 0;
   }
 
   public int size() {
@@ -114,6 +140,7 @@ public class SkipListC<Key extends Comparable<Key>, Value> implements SkipList<K
   public String toString() {
     return root.toString();
   }
+
 
   public static void main(String[] args) {
     SkipListC<Integer, String> sl = new SkipListC<>();
@@ -130,7 +157,7 @@ public class SkipListC<Key extends Comparable<Key>, Value> implements SkipList<K
 
     SkipListC<Integer, String> sl2 = new SkipListC<>();
 
-    int n = 10;
+    int n = 500;
     Integer[] keys = new Integer[n];
     String[] vals = new String[n];
 
@@ -141,6 +168,11 @@ public class SkipListC<Key extends Comparable<Key>, Value> implements SkipList<K
 
     System.out.println("\n\n Printing the SkipList:");
     sl2.insert(keys, vals);
+    sl2.insert(400, "My Key");
     System.out.println(sl2);
+    System.out.println("sl2 size: " + sl2.size());
+    System.out.println("Testing out get(700): " + sl2.get(400));
+    System.out.printf("There were %d comparisons in the search", sl2.comparisons);
+    sl2.comparisons = 0;
   }
 }
