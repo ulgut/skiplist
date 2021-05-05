@@ -11,7 +11,5 @@ public interface SkipList<Key extends Comparable<Key>, Value> {
 
 	boolean isEmpty();
 
-	boolean contains(Key key);
-
 	int size();
 }

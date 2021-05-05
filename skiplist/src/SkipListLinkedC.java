@@ -1,66 +1,56 @@
+import java.util.NoSuchElementException;
+
 public class SkipListLinkedC<Key extends Comparable<Key>, Value> implements SkipList<Key, Value> {
 
 	private final double P = 1 / Math.E; // https://www.sciencedirect.com/science/article/pii/030439759400296U
 	private LinkedNode<Key, Value> start;
 	private LinkedNode<Key, Value> terminus;
-	private int levels;
+	private int levels; // can store this in top terminal
 	private int n;
 
 
 	public SkipListLinkedC() {
-		this.start = new LinkedNode<Key, Value>(LinkedNode.Type.root);
-		this.terminus = new LinkedNode<Key, Value>(LinkedNode.Type.cap);
+		this.start = new LinkedNode<Key, Value>(LinkedNode.Type.root, 1);
+		this.terminus = new LinkedNode<Key, Value>(LinkedNode.Type.cap, 1);
 		this.start.setNext(terminus);
 		this.levels = 1;
 		this.n = 0;
 	}
 
 	private LinkedNode<Key, Value> search(Key key) {
-		if (n == 0) {
-			return null; // fast path
-		}
-		LinkedNode<Key, Value> node = new LinkedNode<Key, Value>(key, null, LinkedNode.Type.node);
+		LinkedNode<Key, Value> node = new LinkedNode<Key, Value>(key, null, LinkedNode.Type.node, 0);
 		LinkedNode<Key, Value> levelNode = start;
 		while (levelNode.getNext() != null) {
 			if (levelNode.getNext().getType() == LinkedNode.Type.cap) {
+				if (levelNode.getLevel() == 1) {
+					break;
+				}
 				levelNode = levelNode.getBottom();
 			} else if (levelNode.getNext().isLess(node)) {
 				levelNode = levelNode.getNext();
 			} else if (levelNode.getNext().equals(node.getKey())) {
+
 				return levelNode.getNext();
 			} else {
-				if (levelNode.getBottom() != null) {
-					levelNode = levelNode.getBottom();
-				} else {
-					levelNode = levelNode.getNext();
-				}
+				levelNode = levelNode.getBottom() == null ? levelNode.getNext() : levelNode.getBottom();
 			}
 		}
-		return null;
+		throw new NoSuchElementException("No Value for " + key);
 	}
 
 
 	public Value get(Key key) {
-		LinkedNode<Key, Value> result = search(key);
-		if (result != null)
-			return result.getValue();
-		return null;
+		return search(key).getValue();
 	}
 
 	public void delete(Key key) {
-		LinkedNode<Key, Value> node = new LinkedNode<>(key, null, LinkedNode.Type.node); //more memory efficient
-		LinkedNode<Key, Value> levelNode = start;
-		while (levelNode != null && levelNode.getNext() != null) {
-			if (levelNode.getNext().getType() == LinkedNode.Type.cap) {
-				levelNode = levelNode.getBottom();
-			} else if (levelNode.getNext().isLess(node)) {
-				levelNode = levelNode.getNext();
-			} else if (levelNode.getNext().equals(node.getKey())) {
-				levelNode.getNext().dettach();
-				levelNode = levelNode.getBottom();
-			} else {
-				levelNode = levelNode.getBottom() == null ? levelNode.getNext() : levelNode.getBottom();
-			}
+		LinkedNode<Key, Value> top = search(key);
+		int level = top.getLevel();
+		while (level > 0) {
+			LinkedNode<Key, Value> tmp = top.getBottom();
+			top.dettach();
+			top = tmp;
+			level--;
 		}
 		n--;
 	}
@@ -69,12 +59,12 @@ public class SkipListLinkedC<Key extends Comparable<Key>, Value> implements Skip
 		int l = randomLevel();
 		increaseEnds(l);
 
-		LinkedNode<Key, Value> levelNode = getLevel(l);
-		LinkedNode<Key, Value> tmp = new LinkedNode<>(LinkedNode.Type.cap);
 		int i = l;
+		LinkedNode<Key, Value> levelNode = getLevel(l);
+		LinkedNode<Key, Value> tmp = new LinkedNode<Key, Value>(LinkedNode.Type.cap, i);
 
 		while (i >= 1) {
-			LinkedNode<Key, Value> node = new LinkedNode<>(key, val, LinkedNode.Type.node);
+			LinkedNode<Key, Value> node = new LinkedNode<Key, Value>(key, val, LinkedNode.Type.node, i);
 			LinkedNode<Key, Value> backNode = levelNode;
 			LinkedNode<Key, Value> frontNode = terminus;
 
@@ -123,14 +113,6 @@ public class SkipListLinkedC<Key extends Comparable<Key>, Value> implements Skip
 		return n == 0;
 	}
 
-	public void wipe() {
-		//implement?
-	}
-
-	public boolean contains(Key key) {
-		return search(key) != null;
-	}
-
 	public int size() {
 		return n;
 	}
@@ -163,7 +145,7 @@ public class SkipListLinkedC<Key extends Comparable<Key>, Value> implements Skip
 		for (LinkedNode<Key, Value> level = start; i >= 1; level = level.getBottom()) {
 			LinkedNode<Key, Value> currentNode = level;
 			while (currentNode.getType() != LinkedNode.Type.cap) {
-				s += "{" + currentNode.getKey() + ", " + currentNode.getValue() + "} --> ";
+				s += "{" + currentNode.getKey() + ", " + currentNode.getValue() + ", " + currentNode.getLevel() + "} -->";
 				currentNode = currentNode.getNext();
 			}
 			s += "{" + currentNode.getKey() + ", " + currentNode.getValue() + "}";
@@ -175,10 +157,12 @@ public class SkipListLinkedC<Key extends Comparable<Key>, Value> implements Skip
 
 	private void increaseEnds(int l) {
 		while (l > levels) {
-			LinkedNode<Key, Value> startLevel = new LinkedNode<Key, Value>(start, null, null, null, null, LinkedNode.Type.root);
-			LinkedNode<Key, Value> termLevel = new LinkedNode<Key, Value>(terminus, startLevel, null, null, null, LinkedNode.Type.cap);
+			System.out.println("Levels" + levels);
+			LinkedNode<Key, Value> startLevel = new LinkedNode<Key, Value>(start, null, null, null, null, LinkedNode.Type.root, levels + 1);
+			LinkedNode<Key, Value> termLevel = new LinkedNode<Key, Value>(terminus, startLevel, null, null, null, LinkedNode.Type.cap, levels + 1);
 			startLevel.setNext(termLevel);
 			start = startLevel;
+			System.out.println(start.getLevel());
 			terminus = termLevel;
 			levels++;
 		}
@@ -205,13 +189,18 @@ public class SkipListLinkedC<Key extends Comparable<Key>, Value> implements Skip
 		for (int i = 0; i < keys.length; i++) {
 			sl.delete(keys[i]);
 		}
+		System.out.println(sl);
 		System.out.println("CONFIRMING DELETE\n");
 		System.out.println((sl.size() == 0) + ", Size: " + sl.size());
+		System.out.println(sl);
+
 		for (int i = 0; i < keys.length; i++) {
-			if (sl.contains(keys[i]))
-				System.out.println("FAILED DELETE WITH KEY: " + keys[i]);
-			else
-				System.out.println("PASSED DELETE WITH KEY: " + keys[i]);
+			try {
+				String res = sl.get(keys[i]);
+				System.out.println("TEST FAILD:" + res);
+			} catch (NoSuchElementException e) {
+				System.out.println("TEST PASSED!");
+			}
 		}
 		System.out.println("\nCONFIRMING DELETE END");
 		System.out.println(sl);

@@ -1,6 +1,6 @@
 public class Tests {
 
-	public static void test1(int n) {
+	public static void test(int n) {
 		Integer[] keys = new Integer[n];
 		String[] vals = new String[n];
 
@@ -18,16 +18,15 @@ public class Tests {
 		SkipListLinkedC<Integer, String> linkedSl = new SkipListLinkedC<>(keys, vals);
 		endTime = System.currentTimeMillis();
 		System.out.println("Linked Initialization Took: " + (endTime - startTime));
-	}
 
-//	private long time(SkipList sl) {
-//		long startTime = System.currentTimeMillis();
-//		long endTime = System.currentTimeMillis();
-//	}
+		startTime = System.currentTimeMillis();
+		endTime = System.currentTimeMillis();
+//		System.out.println("Seq Insertion Took: " + (endTime - startTime));
+	}
 
 
 	public static void main(String[] args) {
 		System.out.println("Skip List Test#1: Insertion Tests Comparison\n");
-		test1(10000);// 1 million elements
+		test(10000); //10k elements
 	}
 }

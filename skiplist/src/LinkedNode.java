@@ -13,22 +13,24 @@ public class LinkedNode<Key extends Comparable<Key>, Value> {
 	}
 
 	private LinkedNode.Type type;
+	private int level;
 
-	public LinkedNode(LinkedNode<Key, Value> bottom, LinkedNode<Key, Value> prev, LinkedNode<Key, Value> next, Key key, Value value, Type t) {
+	public LinkedNode(LinkedNode<Key, Value> bottom, LinkedNode<Key, Value> prev, LinkedNode<Key, Value> next, Key key, Value value, Type t, int level) {
 		this.bottom = bottom;
 		this.prev = prev;
 		this.next = next;
 		this.key = key;
 		this.value = value;
 		this.type = t;
+		this.level = level;
 	}
 
-	public LinkedNode(Type t) {
-		this(null, null, null, null, null, t);
+	public LinkedNode(Type t, int level) {
+		this(null, null, null, null, null, t, level);
 	}
 
-	public LinkedNode(Key key, Value val, Type t) {
-		this(null, null, null, key, val, t);
+	public LinkedNode(Key key, Value val, Type t, int level) {
+		this(null, null, null, key, val, t, level);
 	}
 
 	public LinkedNode<Key, Value> getBottom() {
@@ -37,6 +39,10 @@ public class LinkedNode<Key extends Comparable<Key>, Value> {
 
 	public LinkedNode<Key, Value> getNext() {
 		return this.next;
+	}
+
+	public int getLevel() {
+		return this.level;
 	}
 
 	public Key getKey() {
