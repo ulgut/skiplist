@@ -5,9 +5,15 @@ public interface SkipList<Key extends Comparable<Key>, Value> {
 
 	void insert(Key key, Value val);
 
+	void insert(Key[] keys, Value[] vals);
+
 	String toString();
 
 	boolean isEmpty();
+
+	void wipe();
+
+	boolean contains(Key key);
 
 	int size();
 }
