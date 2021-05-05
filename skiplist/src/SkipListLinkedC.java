@@ -5,7 +5,6 @@ public class SkipListLinkedC<Key extends Comparable<Key>, Value> implements Skip
 	private final double P = 1 / Math.E; // https://www.sciencedirect.com/science/article/pii/030439759400296U
 	private LinkedNode<Key, Value> start;
 	private LinkedNode<Key, Value> terminus;
-	private int levels; // can store this in top terminal
 	private int n;
 
 
@@ -13,7 +12,6 @@ public class SkipListLinkedC<Key extends Comparable<Key>, Value> implements Skip
 		this.start = new LinkedNode<Key, Value>(LinkedNode.Type.root, 1);
 		this.terminus = new LinkedNode<Key, Value>(LinkedNode.Type.cap, 1);
 		this.start.setNext(terminus);
-		this.levels = 1;
 		this.n = 0;
 	}
 
@@ -45,12 +43,10 @@ public class SkipListLinkedC<Key extends Comparable<Key>, Value> implements Skip
 
 	public void delete(Key key) {
 		LinkedNode<Key, Value> top = search(key);
-		int level = top.getLevel();
-		while (level > 0) {
+		while (top != null && top.getLevel() > 0) {
 			LinkedNode<Key, Value> tmp = top.getBottom();
 			top.dettach();
 			top = tmp;
-			level--;
 		}
 		n--;
 	}
@@ -59,12 +55,11 @@ public class SkipListLinkedC<Key extends Comparable<Key>, Value> implements Skip
 		int l = randomLevel();
 		increaseEnds(l);
 
-		int i = l;
 		LinkedNode<Key, Value> levelNode = getLevel(l);
-		LinkedNode<Key, Value> tmp = new LinkedNode<Key, Value>(LinkedNode.Type.cap, i);
+		LinkedNode<Key, Value> tmp = new LinkedNode<Key, Value>(LinkedNode.Type.cap, levelNode.getLevel());
 
-		while (i >= 1) {
-			LinkedNode<Key, Value> node = new LinkedNode<Key, Value>(key, val, LinkedNode.Type.node, i);
+		while (levelNode != null && levelNode.getLevel() >= 0) {
+			LinkedNode<Key, Value> node = new LinkedNode<Key, Value>(key, val, LinkedNode.Type.node, levelNode.getLevel());
 			LinkedNode<Key, Value> backNode = levelNode;
 			LinkedNode<Key, Value> frontNode = terminus;
 
@@ -85,12 +80,10 @@ public class SkipListLinkedC<Key extends Comparable<Key>, Value> implements Skip
 			levelNode = levelNode.getBottom();
 			if (tmp.getType() == LinkedNode.Type.cap) { //tmp is placeholder to enable stitching levels of nodes together.
 				tmp = node;
-				i--;
 				continue;
 			}
 			tmp.setBottom(node);
 			tmp = node;
-			i--;
 		}
 		n++;
 	}
@@ -122,10 +115,8 @@ public class SkipListLinkedC<Key extends Comparable<Key>, Value> implements Skip
 
 	private LinkedNode<Key, Value> getLevel(int l) {
 		LinkedNode<Key, Value> level = start; //this will always be start node at max level
-		int maxLevel = levels;
-		while (maxLevel > l) {
+		while (level.getLevel() > l) {
 			level = level.getBottom(); //keep going down until we hit our entry point
-			maxLevel--;
 		}
 		return level;
 	}
@@ -137,12 +128,11 @@ public class SkipListLinkedC<Key extends Comparable<Key>, Value> implements Skip
 			return 1; // Min number is 1
 	}
 
-	@Override
 
+	@Override
 	public String toString() {
 		String s = "";
-		int i = levels;
-		for (LinkedNode<Key, Value> level = start; i >= 1; level = level.getBottom()) {
+		for (LinkedNode<Key, Value> level = start; level != null; level = level.getBottom()) {
 			LinkedNode<Key, Value> currentNode = level;
 			while (currentNode.getType() != LinkedNode.Type.cap) {
 				s += "{" + currentNode.getKey() + ", " + currentNode.getValue() + ", " + currentNode.getLevel() + "} -->";
@@ -150,21 +140,19 @@ public class SkipListLinkedC<Key extends Comparable<Key>, Value> implements Skip
 			}
 			s += "{" + currentNode.getKey() + ", " + currentNode.getValue() + "}";
 			s += "\n";
-			i--;
 		}
 		return s;
 	}
 
 	private void increaseEnds(int l) {
-		while (l > levels) {
-			System.out.println("Levels" + levels);
-			LinkedNode<Key, Value> startLevel = new LinkedNode<Key, Value>(start, null, null, null, null, LinkedNode.Type.root, levels + 1);
-			LinkedNode<Key, Value> termLevel = new LinkedNode<Key, Value>(terminus, startLevel, null, null, null, LinkedNode.Type.cap, levels + 1);
+		while (l > start.getLevel()) {
+			System.out.println("Levels" + start.getLevel());
+			LinkedNode<Key, Value> startLevel = new LinkedNode<Key, Value>(start, null, null, null, null, LinkedNode.Type.root, start.getLevel() + 1);
+			LinkedNode<Key, Value> termLevel = new LinkedNode<Key, Value>(terminus, startLevel, null, null, null, LinkedNode.Type.cap, startLevel.getLevel() + 1);
 			startLevel.setNext(termLevel);
 			start = startLevel;
 			System.out.println(start.getLevel());
 			terminus = termLevel;
-			levels++;
 		}
 	}
 
