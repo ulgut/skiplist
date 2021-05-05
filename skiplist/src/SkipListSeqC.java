@@ -140,6 +140,11 @@ public class SkipListSeqC<Key extends Comparable<Key>, Value> implements SkipLis
 		return n == 0;
 	}
 
+
+	public boolean contains(Key key) {
+		return false; //IMPLEMENT
+	}
+
 	public int size() {
 		return n;
 	}

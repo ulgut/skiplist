@@ -19,13 +19,11 @@ public class SkipListLinkedC<Key extends Comparable<Key>, Value> implements Skip
 		if (n == 0) {
 			return null; // fast path
 		}
-		int i = levels;
 		LinkedNode<Key, Value> node = new LinkedNode<Key, Value>(key, null, LinkedNode.Type.node);
 		LinkedNode<Key, Value> levelNode = start;
 		while (levelNode.getNext() != null) {
 			if (levelNode.getNext().getType() == LinkedNode.Type.cap) {
 				levelNode = levelNode.getBottom();
-				i--;
 			} else if (levelNode.getNext().isLess(node)) {
 				levelNode = levelNode.getNext();
 			} else if (levelNode.getNext().equals(node.getKey())) {
@@ -33,7 +31,6 @@ public class SkipListLinkedC<Key extends Comparable<Key>, Value> implements Skip
 			} else {
 				if (levelNode.getBottom() != null) {
 					levelNode = levelNode.getBottom();
-					i--;
 				} else {
 					levelNode = levelNode.getNext();
 				}
@@ -51,29 +48,18 @@ public class SkipListLinkedC<Key extends Comparable<Key>, Value> implements Skip
 	}
 
 	public void delete(Key key) {
-		int i = levels;
 		LinkedNode<Key, Value> node = new LinkedNode<>(key, null, LinkedNode.Type.node); //more memory efficient
 		LinkedNode<Key, Value> levelNode = start;
-		while (levelNode.getNext() != null) {
+		while (levelNode != null && levelNode.getNext() != null) {
 			if (levelNode.getNext().getType() == LinkedNode.Type.cap) {
 				levelNode = levelNode.getBottom();
-				i--;
 			} else if (levelNode.getNext().isLess(node)) {
 				levelNode = levelNode.getNext();
 			} else if (levelNode.getNext().equals(node.getKey())) {
 				levelNode.getNext().dettach();
-				if (i == 1) {
-					break;
-				}
 				levelNode = levelNode.getBottom();
-				i--;
 			} else {
-				if (levelNode.getBottom() != null) {
-					levelNode = levelNode.getBottom();
-					i--;
-				} else {
-					levelNode = levelNode.getNext();
-				}
+				levelNode = levelNode.getBottom() == null ? levelNode.getNext() : levelNode.getBottom();
 			}
 		}
 		n--;
@@ -113,7 +99,6 @@ public class SkipListLinkedC<Key extends Comparable<Key>, Value> implements Skip
 				continue;
 			}
 			tmp.setBottom(node);
-			node.setTop(tmp);
 			tmp = node;
 			i--;
 		}
@@ -190,11 +175,9 @@ public class SkipListLinkedC<Key extends Comparable<Key>, Value> implements Skip
 
 	private void increaseEnds(int l) {
 		while (l > levels) {
-			LinkedNode<Key, Value> startLevel = new LinkedNode<Key, Value>(null, start, null, null, null, null, LinkedNode.Type.root);
-			LinkedNode<Key, Value> termLevel = new LinkedNode<Key, Value>(null, terminus, startLevel, null, null, null, LinkedNode.Type.cap);
+			LinkedNode<Key, Value> startLevel = new LinkedNode<Key, Value>(start, null, null, null, null, LinkedNode.Type.root);
+			LinkedNode<Key, Value> termLevel = new LinkedNode<Key, Value>(terminus, startLevel, null, null, null, LinkedNode.Type.cap);
 			startLevel.setNext(termLevel);
-			start.setTop(startLevel);
-			terminus.setTop(termLevel);
 			start = startLevel;
 			terminus = termLevel;
 			levels++;

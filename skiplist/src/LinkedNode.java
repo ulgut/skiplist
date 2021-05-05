@@ -1,5 +1,4 @@
 public class LinkedNode<Key extends Comparable<Key>, Value> {
-	private LinkedNode<Key, Value> top;
 	private LinkedNode<Key, Value> bottom;
 	private LinkedNode<Key, Value> prev;
 	private LinkedNode<Key, Value> next;
@@ -15,8 +14,7 @@ public class LinkedNode<Key extends Comparable<Key>, Value> {
 
 	private LinkedNode.Type type;
 
-	public LinkedNode(LinkedNode<Key, Value> top, LinkedNode<Key, Value> bottom, LinkedNode<Key, Value> prev, LinkedNode<Key, Value> next, Key key, Value value, Type t) {
-		this.top = top;
+	public LinkedNode(LinkedNode<Key, Value> bottom, LinkedNode<Key, Value> prev, LinkedNode<Key, Value> next, Key key, Value value, Type t) {
 		this.bottom = bottom;
 		this.prev = prev;
 		this.next = next;
@@ -26,11 +24,11 @@ public class LinkedNode<Key extends Comparable<Key>, Value> {
 	}
 
 	public LinkedNode(Type t) {
-		this(null, null, null, null, null, null, t);
+		this(null, null, null, null, null, t);
 	}
 
 	public LinkedNode(Key key, Value val, Type t) {
-		this(null, null, null, null, key, val, t);
+		this(null, null, null, key, val, t);
 	}
 
 	public LinkedNode<Key, Value> getBottom() {
@@ -57,20 +55,12 @@ public class LinkedNode<Key extends Comparable<Key>, Value> {
 		this.prev = prev;
 	}
 
-	public void setTop(LinkedNode<Key, Value> top) {
-		this.top = top;
-	}
-
 	public void setBottom(LinkedNode<Key, Value> bottom) {
 		this.bottom = bottom;
 	}
 
 	public Type getType() {
 		return this.type;
-	}
-
-	public LinkedNode getPrev() {
-		return this.prev;
 	}
 
 	public boolean isLess(LinkedNode<Key, Value> other) {
@@ -83,7 +73,6 @@ public class LinkedNode<Key extends Comparable<Key>, Value> {
 	}
 
 	private void wipe() {
-		this.top = null;
 		this.prev = null;
 		this.bottom = null;
 		this.next = null;
