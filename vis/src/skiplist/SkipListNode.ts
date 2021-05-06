@@ -56,10 +56,10 @@ export class SkipListNode{
     }
 
     public toString(): string{
-        var str: string = "";
+        let str: string = "";
 
-        for (var i:number = this.nexts.length - 1; i >= 0; i--) {
-            var currentNode: SkipListNode = this;
+        for (let i:number = this.nexts.length - 1; i >= 0; i--) {
+            let currentNode: SkipListNode = this;
 
             while (currentNode.type !== type.cap) {
                 str += "{" + currentNode.key + ", " + currentNode.val + "} --> ";
@@ -81,6 +81,22 @@ export class SkipListNode{
 
     public getKey():(number | null){
         return this.key;
+    }
+
+    public to2DArray(): (SkipListNode[][]) {
+        let rows: SkipListNode[][] = [];
+
+        for (let i:number = this.nexts.length - 1; i >= 0; i--) {
+            let currentNode: SkipListNode = this;
+            let col: SkipListNode[] = [];
+            while (currentNode.type !== type.cap) {
+                col.push(currentNode);
+                currentNode = currentNode.nexts[i];
+            }
+            rows.push(col);
+        }
+
+        return rows;
     }
 
 

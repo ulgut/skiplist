@@ -41,9 +41,9 @@ export class SkipListC implements SkipList{
 
     public delete(key: number) {
         let node: SkipListNode = this.search(key);
-        for (var i: number = 0; i < node.nexts.length; i++){
-            var b: SkipListNode  = node.prevs[i];
-            var a: SkipListNode  = node.nexts[i];
+        for (let i: number = 0; i < node.nexts.length; i++){
+            let b: SkipListNode  = node.prevs[i];
+            let a: SkipListNode  = node.nexts[i];
             b.nexts[i] = a;
             a.prevs[i] = b;
         }
@@ -73,10 +73,9 @@ export class SkipListC implements SkipList{
             }
 
             let front: SkipListNode = this.terminus;
-            console.log(front.prevs);
 
             if (back.nexts[i] != null){
-                front = front.nexts[i];
+                front = back.nexts[i];
             }
 
             newNode.prevs[i] = back;
@@ -108,6 +107,10 @@ export class SkipListC implements SkipList{
         }
     }
 
+
+    public to2DArray(): SkipListNode[][]{
+        return this.start.to2DArray();
+    }
 
     public toString(): string {
         return this.start.toString();

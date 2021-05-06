@@ -8,14 +8,13 @@ class Grid extends React.Component<any, any>{
     constructor(props:any) {
         super(props);
         this.sl = new SkipListC();
-        this.state = {size:10}
+        this.state = {size:10, slArray: []}
         this.onChangeVal = this.onChangeVal.bind(this);
     }
 
     onChangeVal(e: any){
         e.preventDefault();
         this.setState({[e.target.name] : e.target.value});
-        console.log(this.state.size);
     }
 
 
@@ -26,10 +25,11 @@ class Grid extends React.Component<any, any>{
     renderList(){
         for (let i: number = 0; i < this.state.size; i++){
             let key: number = Math.random() * 100;
-            let val: number = key;
-            this.sl.insert(key, val);
+            this.sl.insert(key, key);
         }
+        this.setState({slArray:this.sl.to2DArray()})
     }
+
 
 
     render(){
