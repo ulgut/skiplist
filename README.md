@@ -1,3 +1,6 @@
 # SkipList
+Writers: Cole Dumas and Jesse Tuglu
+Repo Contains: Linked and Sequential Implementations of Skiplists + Visualization
 
-- Linked and Sequential SkipList implementations in Java by Cole Dumas and Jesse Tuglu
+
+
