@@ -1,11 +1,23 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@500&display=swap');
 $base-font: 'Roboto';
-
-body{
+html{
   font-family: $base-font;
 }
-
+/* Main Page Styling */
 .nav{
   text-align: center;
   font-size: 30px;
+}
+/* Main Page Styling End */
+
+/* Grid Styling */
+
+.skiplist-form{
+  margin-top: 100px;
+  text-align: center;
+}
+
+.node-square{
+  width:30px;
+  height:30px;
 }

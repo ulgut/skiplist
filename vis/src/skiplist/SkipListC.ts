@@ -73,6 +73,7 @@ export class SkipListC implements SkipList{
             }
 
             let front: SkipListNode = this.terminus;
+            console.log(front.prevs);
 
             if (back.nexts[i] != null){
                 front = front.nexts[i];
