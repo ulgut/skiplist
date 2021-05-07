@@ -2,6 +2,7 @@
 $base-font: 'Roboto';
 html{
   font-family: $base-font;
+  //background-color:lightslategray;
 }
 /* Main Page Styling */
 .nav{
@@ -17,7 +18,27 @@ html{
   text-align: center;
 }
 
+.skiplist{
+}
+
+.modified-b{
+  line-height: 20px;
+}
+
 .node-square{
-  width:30px;
-  height:30px;
+  color: black;
+  margin: 10px;
+  width:60px;
+  height:60px;
+  outline-width: 2px;
+  outline-color: black;
+  outline-style: solid;
+
+  &__text{
+    text-align: center;
+  }
+}
+
+.testing{
+  color: black;
 }
