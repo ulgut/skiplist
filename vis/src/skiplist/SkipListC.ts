@@ -18,7 +18,6 @@ export class SkipListC implements SkipList{
     }
 
     private search(key: number): SearchMethodResult {
-        console.log("-------------------------");
         this.animations = [];
         let curr: SkipListNode = this.start;
         let i: number = this.start.height() - 1;
@@ -26,7 +25,6 @@ export class SkipListC implements SkipList{
         this.animations.push(animation);
 
         while(curr.getType() !== type.cap && i >= 0){ // check to see why adding second condition fixes this.
-            console.log("In search, level: ", i+1);
             if (curr.nexts[i].isLessKey(key)){
                 curr = curr.nexts[i];
             }

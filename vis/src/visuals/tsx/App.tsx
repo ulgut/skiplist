@@ -4,10 +4,6 @@ import '../styles/main.scss';
 import Grid from "./Grid";
 
 class App extends React.Component<any, any>{
-    constructor(props: any) {
-        super(props);
-    }
-
     render(){
         return (
             <div>
