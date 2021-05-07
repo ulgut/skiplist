@@ -1,5 +1,5 @@
 import React from 'react';
-import '../styls/main.scss';
+import '../styles/main.scss';
 
 import Grid from "./Grid";
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import '../styls/main.scss';
+import '../styles/main.scss';
 import {SkipListNode} from "../../skiplist/SkipListNode";
 import {type} from '../../skiplist/SkipListNode';
 
