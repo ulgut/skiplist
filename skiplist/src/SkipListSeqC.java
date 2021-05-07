@@ -157,7 +157,7 @@ public class SkipListSeqC<Key extends Comparable<Key>, Value> implements SkipLis
 
 	public static void main(String[] args) {
 		SkipListSeqC<Integer, String> sl = new SkipListSeqC<>();
-
+		sl.insert(0, "Testing");
 		sl.insert(6, "Testing");
 		sl.insert(5, "Hello");
 		sl.insert(1, "Before Hello");
