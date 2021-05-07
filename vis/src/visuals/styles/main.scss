@@ -54,7 +54,13 @@ html{
     margin: 5px;
   }
 }
-
-.testing{
-  color: black;
+.color-box{
+  &-purple{
+    color:white;
+    background-color: purple;
+  }
+  &-blue{
+    color:white;
+    background-color: blue;
+  }
 }

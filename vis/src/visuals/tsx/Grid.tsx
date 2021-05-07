@@ -90,12 +90,24 @@ class Grid extends React.Component<any, any>{
             <div>
                 <div className={"skiplist-form"}>
                     <h4>Graph Params</h4>
+
                     <label>Number of Elements {this.state.size}</label><br/>
+
                     {this.min}<input type="range" name="size" className="skiplist-form__range" id="range" onChange={this.onChangeVal} value={this.state.size} max={this.max} min={this.min}/>{this.max}<br/>
+
                     <button className={"btn btn-dark"} onClick={() => {this.sl = new SkipListC(); this.renderList()}}>Build</button><br/>
-                    <label>Search For An Element</label><br/><br/>
+
+                    <label>Search For An Element</label><br/>
+
+                    <small className={"color-box-purple"}>Purple: Path</small><br/>
+
+
+                    <small className={"color-box-blue"}>Blue: Element(if any)</small><br/><br/>
+
                     <input type={"number"} name={"search_key"} value={this.state.search_key} onChange={this.onChangeVal} placeholder={"Enter Key Here."}/>
+
                     <button className={"btn btn-dark"} onClick={this.handleSearch}>Search</button><br/>
+
                     <label>{this.state.search_key === "" && this.state.search_result === null ? "": "Search Result: " + this.state.search_result}</label>
                     <br/>
                     <br/>
