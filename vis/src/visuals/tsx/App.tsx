@@ -12,7 +12,7 @@ class App extends React.Component<any, any>{
         return (
             <div>
                 <nav className={"nav"}>
-                    Skip Lists by Cole Dumas and Jesse Tuglu
+                    Skip Lists
                 </nav>
                 <Grid/>
             </div>

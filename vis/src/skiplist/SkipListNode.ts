@@ -2,7 +2,6 @@ export enum type{
     root,
     node,
     cap,
-    null
 }
 
 export class SkipListNode{
@@ -12,8 +11,7 @@ export class SkipListNode{
     private val: number | null;
     private type: type;
 
-
-    constructor(prevs?: undefined, nexts?: undefined, key?: number | null, val?: number | null, nodeType?: type) {
+    constructor(prevs?: null, nexts?: null, key?: number | null, val?: number | null, nodeType?: type) {
         this.prevs = prevs || [];
         this.nexts = nexts || [];
         this.key = key || null;
@@ -22,12 +20,10 @@ export class SkipListNode{
     }
 
     private compareTo(n2: number | null): number{
-        // @tsx-ignore
         // @ts-ignore
         if (this.key > n2){
             return 1;
         }
-        // @tsx-ignore
         else { // @ts-ignore
             if(this.key < n2){
                         return -1;
@@ -96,7 +92,6 @@ export class SkipListNode{
     public getKey():(number | null){
         return this.key;
     }
-
 
     public to2DArray(): (SkipListNode[][]) {
         let rows: SkipListNode[][] = [];

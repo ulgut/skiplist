@@ -1,4 +1,5 @@
 import {SkipListNode} from "./SkipListNode";
+import {SkipListC} from "./SkipListC";
 
 export interface SkipList{
     get(key: number): GetMethodResult;
@@ -17,4 +18,10 @@ export interface GetMethodResult{
 export interface SearchMethodResult{
     element: SkipListNode | null;
     animations:{}[];
+}
+
+export interface animationJson{
+    c1: SkipListNode | null;
+    c2: SkipListNode | null;
+    slState: SkipListC;
 }

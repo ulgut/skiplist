@@ -6,7 +6,8 @@ import {type} from '../../skiplist/SkipListNode';
 
 interface nodeProps{
     node: SkipListNode | undefined;
-    active: false;
+    r: number;
+    c: number;
 }
 
 function getColor(node: SkipListNode){
@@ -31,17 +32,17 @@ function setText(node: SkipListNode){
     }
 }
 
-function setNode(node: SkipListNode | undefined): (JSX.Element){
+function setNode(node: SkipListNode | undefined, r:number, c: number): (JSX.Element){
     if (node === undefined){
         return (
-            <div className={"node-square"} style={{backgroundColor: `transparent`}}>
+            <div id={`node-${r}`} className={"node-square"} style={{backgroundColor: `transparent`}}>
                 <br className={"modified-b"}/>
                 <p className={"node-square__text"}>===={'>'}</p>
             </div>
         )
     }
     return (
-        <div className={"node-square"} style={{backgroundColor:getColor(node)}}>
+        <div id={`node-${node.getKey()}`} className={"node-square"} style={{backgroundColor:getColor(node)}}>
             <p className={"node-square__text"}>{setText(node)}</p>
         </div>
     )
@@ -49,7 +50,7 @@ function setNode(node: SkipListNode | undefined): (JSX.Element){
 
 const Node = (props: nodeProps) =>{
     return (
-        setNode(props.node)
+        setNode(props.node, props.r,props.c)
     )
 }
 
