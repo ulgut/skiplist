@@ -31,5 +31,5 @@ A sequential skiplist
 A linked skiplist node
 ##### SkipListLinkedC.java
 A linked skiplist
-### Typescript Visualization
-##### See readme inside /vis
+### Typescript:
+See readme inside /vis
