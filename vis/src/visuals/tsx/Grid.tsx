@@ -101,18 +101,13 @@ class Grid extends React.Component<any, any>{
 
                     <small className={"color-box-purple"}>Purple: Path</small><br/>
 
-
                     <small className={"color-box-blue"}>Blue: Element(if any)</small><br/><br/>
 
                     <input type={"number"} name={"search_key"} value={this.state.search_key} onChange={this.onChangeVal} placeholder={"Enter Key Here."}/>
 
                     <button className={"btn btn-dark"} onClick={this.handleSearch}>Search</button><br/>
 
-                    <label>{this.state.search_key === "" && this.state.search_result === null ? "": "Search Result: " + this.state.search_result}</label>
-                    <br/>
-                    <br/>
-                    <br/>
-
+                    <label>{this.state.search_key === "" && this.state.search_result === null ? "": "Search Result: " + this.state.search_result}</label><br/><br/><br/>
                 </div>
                 <div className={"container mx-auto skiplist"}>
                     {this.skipGrid()}

@@ -78,7 +78,16 @@ public class LinkedNode<Key extends Comparable<Key>, Value> {
 			return this.key.compareTo(other.key) < 0;
 	}
 
-	
+	public boolean isLess(Key otherKey) {
+		if (this.type == Type.root)
+			return true;
+		else if (this.type == Type.cap)
+			return false;
+		else
+			return this.key.compareTo(otherKey) < 0;
+	}
+
+
 	private void wipe() {
 		this.prev = null;
 		this.bottom = null;
