@@ -58,13 +58,21 @@ class Grid extends React.Component<any, any>{
 
 
     render(){
+        const setSize = () =>{
+            var w = window.innerWidth;
+            var MAX_SIZE = 60;
+            var MARGIN = 10
+            var resize_factor = ( w / (this.state.slArray[0].length * 60 + this.state.slArray[0].length * MARGIN));
+            return resize_factor < 1 ? MAX_SIZE * (1-resize_factor) : MAX_SIZE;
+        }
         const skipGrid = this.state.slArray.slice(0).reverse().map((row: SkipListNode[], rindex: number)=>{
+
             return(
-                <div className={"row"}>
+                <div className={"row m-0 p-0 justify-content-center"}>
                     {
                         row.map((col: SkipListNode, cindex: number)=>{
                             return(
-                                <div className={"col-auto"}><Node node={col} active={false}/></div>
+                                <div className={"col-auto p-0 m-0"}><Node node={col} active={false}/></div>
                             )
                         })
                     }
@@ -83,7 +91,7 @@ class Grid extends React.Component<any, any>{
                     <button className={"btn btn-dark"} onClick={this.handleSearch}>Search</button><br/>
                     <label>{this.state.search_key === "" && this.state.search_result === null ? "": "Search Result: " + this.state.search_result}</label><br/>
                 </div>
-                <div className={"skiplist"}>
+                <div className={"container  mx-auto skiplist"}>
                     {skipGrid}
                 </div>
             </div>
