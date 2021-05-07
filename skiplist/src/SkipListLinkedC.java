@@ -185,5 +185,11 @@ public class SkipListLinkedC<Key extends Comparable<Key>, Value> implements Skip
 		}
 		System.out.println("\nCONFIRMING DELETE END");
 		System.out.println(sl);
+		SkipListLinkedC<Integer, Integer> sl2 = new SkipListLinkedC<Integer, Integer>();
+		for (int i = 0; i < 30; i++) {
+			int key = (int) Math.floor(Math.random() * 100);
+			sl2.insert(key, key);
+		}
+		System.out.println(sl2.size());
 	}
 }
