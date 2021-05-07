@@ -1,10 +1,31 @@
-import java.util.NoSuchElementException;
+import java.util.HashMap;
 
 public class Tests {
 
 	private static class Log {
 		public void print(String test, long time, String units) {
 			System.out.println(String.format("%s: %d%s", test, time, units));// millis
+		}
+	}
+
+	private static class Record {
+		HashMap<String, Long> hm;
+
+		public Record() {
+			this.hm = new HashMap<String, Long>();
+		}
+
+		public int size() {
+			return hm.size();
+		}
+
+		public long avg() {
+			long sum = hm.values().stream().mapToLong(val -> val).sum();
+			return sum / this.size();
+		}
+
+		public void add(String test, long result) {
+			hm.put(test, result);
 		}
 	}
 
@@ -22,92 +43,68 @@ public class Tests {
 		long startTime;
 		long endTime;
 
-		startTime = System.currentTimeMillis();
+
+		// Initialization
+		startTime = System.nanoTime();
 		SkipListSeqC<Integer, String> seqSl = new SkipListSeqC<>(keys, vals);
-		endTime = System.currentTimeMillis();
-		log.print("Sequential Initialization", (endTime - startTime), "ms");
+		endTime = System.nanoTime();
+		log.print("Sequential Initialization", (endTime - startTime), "ns");
 
-		startTime = System.currentTimeMillis();
+		startTime = System.nanoTime();
 		SkipListLinkedC<Integer, String> linkedSl = new SkipListLinkedC<>(keys, vals);
-		endTime = System.currentTimeMillis();
-		log.print("Linked Initialization", (endTime - startTime), "ms");
-
-		startTime = System.nanoTime();
-		String val1 = seqSl.get(keys[n % 2]);
 		endTime = System.nanoTime();
-		log.print("Sequential GET", (endTime - startTime), "ns");
+		log.print("Linked Initialization", (endTime - startTime), "ns");
+		// Initialization End
 
-
-		startTime = System.currentTimeMillis();
-		String val2 = linkedSl.get(keys[n % 2]);
-		endTime = System.currentTimeMillis();
-		log.print("Linked GET", (endTime - startTime), "ns");
-
-		assert val1.equals(val2);
-
-
-		startTime = System.nanoTime();
-		seqSl.delete(keys[n % 2]);
-		endTime = System.nanoTime();
-		log.print("Sequential DELETE", (endTime - startTime), "ns");
-
-
-		startTime = System.currentTimeMillis();
-		linkedSl.delete(keys[n % 2]);
-		endTime = System.currentTimeMillis();
-		log.print("Linked DELETE", (endTime - startTime), "ns");
-
-
-		//Throws error on get deleted element.
-//		try {
-//			seqSl.get(keys[n % 2]);
-//			System.out.println("failed.");
-//		} catch (NoSuchElementException e) {
-//			System.out.println("passed.");
-//		}
-
-
-		try {
-			linkedSl.get(keys[n % 2]);
-			System.out.println("failed.");
-		} catch (NoSuchElementException e) {
-			System.out.println("passed.");
-		}
-
-
-		startTime = System.nanoTime();
+		// Get
+		Record seqGetRecord = new Record();
 		for (int i = 0; i < keys.length; i++) {
-			if (i == n % 2) {
-//				try {
-//					seqSl.get(keys[n % 2]);
-//					System.out.println("failed.");
-//				} catch (NoSuchElementException e) {
-//					continue;
-//				}
-				continue;
-			}
+			startTime = System.nanoTime();
+			String val = seqSl.get(keys[i]);
+			endTime = System.nanoTime();
+			seqGetRecord.add("Get Test:" + i, endTime - startTime);
+			assert (val.equals(vals[i]));
+
+		}
+		log.print("Sequential GET", seqGetRecord.avg(), "ns");
+
+
+		Record linkedGetRecord = new Record();
+		for (int i = 0; i < keys.length; i++) {
+			startTime = System.nanoTime();
+			String val = linkedSl.get(keys[i]);
+			endTime = System.nanoTime();
+			linkedGetRecord.add("Get Test:" + i, endTime - startTime);
+			assert (val.equals(vals[i]));
+
+		}
+		log.print("Linked GET", linkedGetRecord.avg(), "ns");
+		// Get End
+
+		//Delete
+		Record seqDeleteRecord = new Record();
+		for (int i = 0; i < keys.length; i++) {
+			startTime = System.nanoTime();
 			seqSl.delete(keys[i]);
+			endTime = System.nanoTime();
+			seqDeleteRecord.add("Get Test:" + i, endTime - startTime);
+
 		}
-		endTime = System.nanoTime();
-		log.print("Sequential DELETE ALL", (endTime - startTime), "ns");
+		log.print("Sequential DELETE", seqDeleteRecord.avg(), "ns");
 
 
-		startTime = System.nanoTime();
+		Record linkedDeleteRecord = new Record();
 		for (int i = 0; i < keys.length; i++) {
-			if (i == n % 2) {
-				try {
-					linkedSl.get(keys[n % 2]);
-					System.out.println("failed.");
-				} catch (NoSuchElementException e) {
-					continue;
-				}
-			}
+			startTime = System.nanoTime();
 			linkedSl.delete(keys[i]);
+			endTime = System.nanoTime();
+			linkedDeleteRecord.add("Get Test:" + i, endTime - startTime);
+
 		}
-		endTime = System.nanoTime();
-		log.print("Linked DELETE ALL", (endTime - startTime), "ns");
+		log.print("Linked DELETE", linkedDeleteRecord.avg(), "ns");
 
 		assert (seqSl.size() == linkedSl.size() && linkedSl.size() == 0);
+		//Delete End
 
 	}
 

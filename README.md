@@ -21,15 +21,7 @@
    	    int size();
    }
 ```
-#### Sequential
-##### SeqNode.java
-A sequential skiplist node
-##### SkipListSeqC.java
-A sequential skiplist
-#### Linked
-##### LinkedNode.java
-A linked skiplist node
-##### SkipListLinkedC.java
-A linked skiplist
 ### Typescript:
 See readme inside /vis
+### Benchmarks:
+
