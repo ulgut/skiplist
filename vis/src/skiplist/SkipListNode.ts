@@ -23,12 +23,15 @@ export class SkipListNode{
 
     private compareTo(n2: number | null): number{
         // @tsx-ignore
+        // @ts-ignore
         if (this.key > n2){
             return 1;
         }
         // @tsx-ignore
-        else if(this.key < n2){
-            return -1;
+        else { // @ts-ignore
+            if(this.key < n2){
+                        return -1;
+                    }
         }
         return 0;
     }
