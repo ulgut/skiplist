@@ -11,8 +11,8 @@ class App extends React.Component<any, any>{
     render(){
         return (
             <div>
-                <nav className={"nav"}>
-                    Skip Lists
+                <nav className={"header"}>
+                    <h2>Skip Lists by Cole Dumas and Jesse Tuglu</h2>
                 </nav>
                 <Grid/>
             </div>
