@@ -1,4 +1,4 @@
-import React, {CSSProperties} from 'react';
+import React from 'react';
 import '../styls/main.scss';
 import {SkipListNode} from "../../skiplist/SkipListNode";
 import {type} from '../../skiplist/SkipListNode';
@@ -17,8 +17,6 @@ function getColor(node: SkipListNode){
             return `transparent`
         case type.root:
             return `green`;
-        case type.null:
-            return `yellow`;
     }
 }
 
