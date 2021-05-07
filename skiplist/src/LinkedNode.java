@@ -69,6 +69,7 @@ public class LinkedNode<Key extends Comparable<Key>, Value> {
 		return this.type;
 	}
 
+	// compares two nodes
 	public boolean isLess(LinkedNode<Key, Value> other) {
 		if (this.type == LinkedNode.Type.root)
 			return true;
@@ -78,6 +79,7 @@ public class LinkedNode<Key extends Comparable<Key>, Value> {
 			return this.key.compareTo(other.key) < 0;
 	}
 
+	// another node's key
 	public boolean isLess(Key otherKey) {
 		if (this.type == Type.root)
 			return true;
@@ -87,7 +89,7 @@ public class LinkedNode<Key extends Comparable<Key>, Value> {
 			return this.key.compareTo(otherKey) < 0;
 	}
 
-
+	// gives node instance back to garbage
 	private void wipe() {
 		this.prev = null;
 		this.bottom = null;
@@ -96,6 +98,7 @@ public class LinkedNode<Key extends Comparable<Key>, Value> {
 		this.key = null;
 	}
 
+	// removes node from skiplist
 	public void dettach() {
 		LinkedNode<Key, Value> left = prev;
 		LinkedNode<Key, Value> right = next;
@@ -104,6 +107,7 @@ public class LinkedNode<Key extends Comparable<Key>, Value> {
 		wipe();
 	}
 
+	// checks if two nodes are equal
 	public boolean equals(Key otherKey) {
 		if (this.key == null)
 			return false;
@@ -119,5 +123,4 @@ public class LinkedNode<Key extends Comparable<Key>, Value> {
 		s += "{" + this.key + ", " + this.value + ", " + this.type + "}";
 		return s;
 	}
-
 }
