@@ -9,4 +9,4 @@ Holds TS implementations, which are direct compilations from our main Java imple
 
 ### Version History
 v1.0 --- Add basic insertion grid<br/>
-v1.1 --- A
+v1.1 --- Add functioning get method
