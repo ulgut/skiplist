@@ -21,33 +21,12 @@ public class SkipListSeqC<Key extends Comparable<Key>, Value> implements SkipLis
 		this.insert(keys, vals);
 	}
 
-	private SeqNode<Key, Value> search(Key key) {
-		System.out.println("This is the key in search: " + key);
-		SeqNode<Key, Value> currentNode = root;
-		int i = root.height() - 1;
-
-		while (currentNode.getType() != SeqNode.Type.cap && i >= 0) {
-			System.out.println("This is the key in search: " + key);
-			System.out.println("currentNode.nexts.get(i) has key = " + currentNode.nexts.get(i).getKey());
-			if (currentNode.nexts.get(i).isLess(key)) { //most common case
-				currentNode = currentNode.nexts.get(i);
-				comparisons++;
-			} else if (currentNode.nexts.get(i).equals(key)) {
-				comparisons++; //needed here?
-				return currentNode.nexts.get(i);
-			} else { // if !(currentNode.nexts.get(i).isLess(key)) then go down a level
-				comparisons++;
-				i--;
-			}
-		}
-		throw new NoSuchElementException("No Value for key:" + key);
-	}
-
 	public Value get(Key key) {
 		return search(key).getValue();
 	}
 
 	//should we delete multiples? Should we allow for multiples at all?
+
 	public void delete(Key key) {
 		SeqNode<Key, Value> node = search(key);
 
@@ -62,14 +41,19 @@ public class SkipListSeqC<Key extends Comparable<Key>, Value> implements SkipLis
 		n--;
 	}
 
-	private void increaseEnds(int levels) {
-		while (levels > root.height()) {
-			root.nexts.add(new SeqNode<>());
-			cap.prevs.add(new SeqNode<>());
+	public boolean isEmpty() {
+		return n == 0;
+	}
 
-			//linking the root and cap
-			root.nexts.set(root.nexts.size() - 1, cap);
-			cap.prevs.set(root.nexts.size() - 1, root);
+	public void insert(Key[] keys, Value[] vals) {
+		if (keys.length != vals.length)
+			throw new IndexOutOfBoundsException("Invalid Input! keys and vals arrays must have same number of elements");
+		for (int i = 0; i < keys.length; i++) {
+			try {
+				insert(keys[i], vals[i]);
+			} catch (IllegalArgumentException e) {
+				System.out.println("Cannot add this node, key already present");
+			}
 		}
 	}
 
@@ -123,32 +107,6 @@ public class SkipListSeqC<Key extends Comparable<Key>, Value> implements SkipLis
 		n++;
 	}
 
-	public void insert(Key[] keys, Value[] vals) {
-		if (keys.length != vals.length)
-			throw new IndexOutOfBoundsException("Invalid Input! keys and vals arrays must have same number of elements");
-		for (int i = 0; i < keys.length; i++) {
-			try {
-				insert(keys[i], vals[i]);
-			} catch (IllegalArgumentException e) {
-				System.out.println("Cannot add this node, key already present");
-			}
-		}
-	}
-
-	//generates a number of levels for a node to have
-	private int levels() {
-		if (Math.random() < P)
-			return 1 + levels();
-		else
-			return 1; // Min number is 1
-	}
-
-
-	public boolean isEmpty() {
-		return n == 0;
-	}
-
-
 	public boolean contains(Key key) {
 		try {
 			search(key);
@@ -173,5 +131,48 @@ public class SkipListSeqC<Key extends Comparable<Key>, Value> implements SkipLis
 
 	public void resetComparisons() {
 		comparisons = 0;
+	}
+
+	// increase size of root and cap nodes
+	private void increaseEnds(int levels) {
+		while (levels > root.height()) {
+			root.nexts.add(new SeqNode<>());
+			cap.prevs.add(new SeqNode<>());
+
+			//linking the root and cap
+			root.nexts.set(root.nexts.size() - 1, cap);
+			cap.prevs.set(root.nexts.size() - 1, root);
+		}
+	}
+
+	//generates a number of levels for a node to have
+	private int levels() {
+		if (Math.random() < P)
+			return 1 + levels();
+		else
+			return 1; // Min number is 1
+	}
+
+
+	private SeqNode<Key, Value> search(Key key) {
+		System.out.println("This is the key in search: " + key);
+		SeqNode<Key, Value> currentNode = root;
+		int i = root.height() - 1;
+
+		while (currentNode.getType() != SeqNode.Type.cap && i >= 0) {
+			System.out.println("This is the key in search: " + key);
+			System.out.println("currentNode.nexts.get(i) has key = " + currentNode.nexts.get(i).getKey());
+			if (currentNode.nexts.get(i).isLess(key)) { //most common case
+				currentNode = currentNode.nexts.get(i);
+				comparisons++;
+			} else if (currentNode.nexts.get(i).equals(key)) {
+				comparisons++; //needed here?
+				return currentNode.nexts.get(i);
+			} else { // if !(currentNode.nexts.get(i).isLess(key)) then go down a level
+				comparisons++;
+				i--;
+			}
+		}
+		throw new NoSuchElementException("No Value for key:" + key);
 	}
 }
