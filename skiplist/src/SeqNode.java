@@ -6,6 +6,7 @@ public class SeqNode<Key extends Comparable<Key>, Value> {
   public ArrayList<SeqNode<Key, Value>> nexts; //make private with accessor methods
 
   private Key key;
+
   private Value value;
 
   enum Type {
@@ -56,18 +57,19 @@ public class SeqNode<Key extends Comparable<Key>, Value> {
   public boolean isLess(Key otherKey) {
     System.out.println("\n +++++++++++ isLess just called. this.key is " + this.key + " with type = " + this.getType() + " | otherKey = " + otherKey);
     if (this.type == Type.root) {
-      System.out.println("Branch 1");
+      System.out.println("Is less Branch 1");
       return true;
     } else if (this.type == Type.cap) {
-      System.out.println("Branch 2");
+      System.out.println(" Is less Branch 2");
       return false;
     } else {
-      System.out.println("Branch 3");
+      System.out.println("Is less Branch 3");
       return this.key.compareTo(otherKey) < 0;
     }
   }
 
   public boolean equals(Key otherKey) {
+    System.out.println("Called equals. this key = " + this.key + " vs the other key = " + otherKey);
     if (this.key == null)
       return false;
     else {
@@ -91,7 +93,9 @@ public class SeqNode<Key extends Comparable<Key>, Value> {
         str += "{" + currentNode.key + ", " + currentNode.value + "} --> ";
         currentNode = currentNode.nexts.get(i);
       }
+      str += "{" + currentNode.getKey() + ", " + currentNode.getValue() + "}";
       str += "\n";
+
     }
 
     return str;
@@ -107,6 +111,10 @@ public class SeqNode<Key extends Comparable<Key>, Value> {
 
   public Type getType() {
     return type;
+  }
+
+  public void setValue(Value value) {
+    this.value = value;
   }
 
 }

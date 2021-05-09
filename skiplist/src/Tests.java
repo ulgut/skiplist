@@ -52,13 +52,13 @@ public class Tests {
     log.print("Sequential Initialization", (endTime - startTime), "ns");
 
     System.out.println(seqSl);
-
+/*
     startTime = System.nanoTime();
     SkipListLinkedC<Integer, String> linkedSl = new SkipListLinkedC<>(keys, vals);
     endTime = System.nanoTime();
     log.print("Linked Initialization", (endTime - startTime), "ns");
     // Initialization End
-
+*/
     // Get
     Record seqGetRecord = new Record();
     for (int i = 0; i < seqSl.size(); i++) {
@@ -72,7 +72,7 @@ public class Tests {
     }
     log.print("Sequential GET", seqGetRecord.avg(), "ns");
 
-
+/*
     Record linkedGetRecord = new Record();
     for (int i = 0; i < linkedSl.size(); i++) {
       startTime = System.nanoTime();
@@ -82,7 +82,7 @@ public class Tests {
       assert (val.equals(vals[i]));
 
     }
-    log.print("Linked GET", linkedGetRecord.avg(), "ns");
+    log.print("Linked GET", linkedGetRecord.avg(), "ns"); */
     // Get End
 
     //Delete
@@ -111,8 +111,8 @@ public class Tests {
 
     }
     log.print("Linked DELETE", linkedDeleteRecord.avg(), "ns");
-
-    assert (seqSl.size() == linkedSl.size() && linkedSl.size() == 0);
+/*
+    assert (seqSl.size() == linkedSl.size() && linkedSl.size() == 0); */
     //Delete End
 
   }
@@ -149,12 +149,12 @@ public class Tests {
 //		} catch (NoSuchElementException e) {
 //			System.out.println("The node with key = 4000 was successfully deleted");
 //		}
-    //test(100); //10k elements
+    test(1000); //10k elements
 
 
     SkipListSeqC<Integer, String> sl = new SkipListSeqC<Integer, String>();
-    Integer[] keys = {1, 2, 3, 4, 5, 6, 9, 11, 13, 15, 2, 4, 5};
-    String[] values = {"1", "2", "3", "4", "5", "6", "9", "11", "13", "15", "2", "4", "5"};
+    Integer[] keys = {1, 2, 3, 4, 5, 6, 9, 11, 13, 15, 5, 6};
+    String[] values = {"1", "2", "3", "4", "5", "6", "9", "11", "13", "15", "5", "6"};
     sl.insert(keys, values);
 
     System.out.println(sl);
@@ -173,7 +173,7 @@ public class Tests {
     sl.get(4);
     sl.get(5);
 
-    for (int i = 1; i < keys.length; i++) {
+    for (int i = 0; i < keys.length; i++) {
       System.out.println("======================");
       System.out.println("Here is key " + i + ": " + keys[i]);
       sl.get(keys[i]);

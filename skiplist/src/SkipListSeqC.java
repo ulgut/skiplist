@@ -21,12 +21,31 @@ public class SkipListSeqC<Key extends Comparable<Key>, Value> implements SkipLis
     this.insert(keys, vals);
   }
 
+  private SeqNode<Key, Value> search(Key key) {
+    SeqNode<Key, Value> currentNode = root;
+    int i = root.height() - 1;
+
+    //clean up conditional?
+    while (currentNode.getType() != SeqNode.Type.cap && i >= 0) {
+      if (currentNode.nexts.get(i).isLess(key)) { //most common case
+        currentNode = currentNode.nexts.get(i);
+        comparisons++;
+      } else if (currentNode.nexts.get(i).equals(key)) {
+        comparisons++; //needed here?
+        return currentNode.nexts.get(i);
+      } else { // if !(currentNode.nexts.get(i).isLess(key)) then go down a level
+        comparisons++;
+        i--;
+      }
+    }
+    throw new NoSuchElementException("No Value for " + key);
+  }
+
   public Value get(Key key) {
     return search(key).getValue();
   }
 
   //should we delete multiples? Should we allow for multiples at all?
-
   public void delete(Key key) {
     SeqNode<Key, Value> node = search(key);
 
@@ -34,6 +53,7 @@ public class SkipListSeqC<Key extends Comparable<Key>, Value> implements SkipLis
     for (int i = 0; i < node.nexts.size(); i++) {
       SeqNode<Key, Value> beforeNode = node.prevs.get(i);
       SeqNode<Key, Value> afterNode = node.nexts.get(i);
+      System.out.println("Inside delete, beforeNode.key = " + beforeNode.getKey() + " beforeNode.type = " + beforeNode.getType() + " and afterNode.key = " + afterNode.getKey() + " afterNode.type = " + afterNode.getType());
 
       beforeNode.nexts.set(i, afterNode);
       afterNode.prevs.set(i, beforeNode);
@@ -41,19 +61,14 @@ public class SkipListSeqC<Key extends Comparable<Key>, Value> implements SkipLis
     n--;
   }
 
-  public boolean isEmpty() {
-    return n == 0;
-  }
+  private void increaseEnds(int levels) {
+    while (levels > root.height()) {
+      root.nexts.add(new SeqNode<>());
+      cap.prevs.add(new SeqNode<>());
 
-  public void insert(Key[] keys, Value[] vals) {
-    if (keys.length != vals.length)
-      throw new IndexOutOfBoundsException("Invalid Input! keys and vals arrays must have same number of elements");
-    for (int i = 0; i < keys.length; i++) {
-      try {
-        insert(keys[i], vals[i]);
-      } catch (IllegalArgumentException e) {
-        System.out.println("Cannot add this node, key already present");
-      }
+      //linking the root and cap
+      root.nexts.set(root.nexts.size() - 1, cap);
+      cap.prevs.set(root.nexts.size() - 1, root);
     }
   }
 
@@ -86,7 +101,8 @@ public class SkipListSeqC<Key extends Comparable<Key>, Value> implements SkipLis
       }
 
       if (backNode.nexts.get(i).equals(key)) {
-        throw new IllegalArgumentException("Cannot add Node with key: " + key + ". A node with key already exits");
+        this.delete(key);
+        System.out.print("\n============Just Replaced a node with a new node of the same Key ==============\n");
       }
 
       //Setting the front node
@@ -107,42 +123,14 @@ public class SkipListSeqC<Key extends Comparable<Key>, Value> implements SkipLis
     n++;
   }
 
-  public boolean contains(Key key) {
-    try {
-      search(key);
-      return true;
-    } catch (NoSuchElementException e) {
-      return false;
-    }
-  }
+  public void insert(Key[] keys, Value[] vals) {
+    if (keys.length != vals.length)
+      throw new IndexOutOfBoundsException("Invalid Input! keys and vals arrays must have same number of elements");
+    else
+      for (int i = 0; i < keys.length; i++) {
+        insert(keys[i], vals[i]);
+      }
 
-  public int size() {
-    return n;
-  }
-
-  @Override
-  public String toString() {
-    return root.toString();
-  }
-
-  public int getComparisons() {
-    return comparisons;
-  }
-
-  public void resetComparisons() {
-    comparisons = 0;
-  }
-
-  // increase size of root and cap nodes
-  private void increaseEnds(int levels) {
-    while (levels > root.height()) {
-      root.nexts.add(new SeqNode<>());
-      cap.prevs.add(new SeqNode<>());
-
-      //linking the root and cap
-      root.nexts.set(root.nexts.size() - 1, cap);
-      cap.prevs.set(root.nexts.size() - 1, root);
-    }
   }
 
   //generates a number of levels for a node to have
@@ -154,57 +142,68 @@ public class SkipListSeqC<Key extends Comparable<Key>, Value> implements SkipLis
   }
 
 
-  /*
-  private SeqNode<Key, Value> search(Key key) {
-    System.out.println("This is the key in search: " + key);
-    SeqNode<Key, Value> currentNode = root;
-    int i = root.height() - 1;
-
-    while (currentNode.getType() != SeqNode.Type.cap && i >= 0) {
-      System.out.println("Current i level is " + i);
-      System.out.println("This is the key in search: " + key);
-      System.out.println("currentNode has key = " + currentNode.getKey());
-      System.out.println("currentNode.nexts.get(i) has key = " + currentNode.nexts.get(i).getKey());
-      if (currentNode.nexts.get(i).isLess(key)) { //most common case
-        currentNode = currentNode.nexts.get(i);
-        comparisons++;
-        System.out.println("Search branch 1");
-      } else if (currentNode.nexts.get(i).equals(key)) {
-        comparisons++; //needed here?
-        System.out.println("Search branch 2");
-        return currentNode.nexts.get(i);
-      } else { // if !(currentNode.nexts.get(i).isLess(key)) then go down a level
-        comparisons++;
-        System.out.println("Search branch 3");
-        i--;
-      }
-    }
-    throw new NoSuchElementException("No Value for key:" + key);
-  } */
-
-  private SeqNode<Key, Value> search(Key key) {
-
-    SeqNode<Key, Value> currentNode = root;
-    int i = root.height() - 1;
-
-    while (currentNode.getType() != SeqNode.Type.cap && i >= 0) {
-
-      if (currentNode.nexts.get(i).isLess(key)) { //most common case
-        currentNode = currentNode.nexts.get(i);
-        comparisons++;
-
-      } else if (currentNode.nexts.get(i).equals(key)) {
-        comparisons++; //needed here?
-
-        return currentNode.nexts.get(i);
-      } else { // if !(currentNode.nexts.get(i).isLess(key)) then go down a level
-        comparisons++;
-      
-        i--;
-      }
-    }
-    throw new NoSuchElementException("No Value for key:" + key);
+  public boolean isEmpty() {
+    return n == 0;
   }
 
 
+  public boolean contains(Key key) {
+    return false; //IMPLEMENT
+  }
+
+  public int size() {
+    return n;
+  }
+
+  @Override
+  public String toString() {
+    return root.toString();
+  }
+
+
+  public static void main(String[] args) {
+    SkipListSeqC<Integer, String> sl = new SkipListSeqC<>();
+    sl.insert(0, "Testing");
+    sl.insert(6, "Testing");
+    sl.insert(5, "Hello");
+    sl.insert(1, "Before Hello");
+    sl.insert(-10000, "wicked early");
+    sl.insert(5, "Second 5");
+    sl.insert(1000, "Wicked big");
+    sl.insert(500, "pretty big");
+    sl.insert(30, "Medium");
+    System.out.println(sl);
+
+    System.out.println("Sl1.get: " + sl.get(30));
+
+    SkipListSeqC<Integer, String> sl2 = new SkipListSeqC<>();
+
+    int n = 500;
+    Integer[] keys = new Integer[n];
+    String[] vals = new String[n];
+
+    for (int i = 0; i < n; i++) {
+      keys[i] = (int) (1000 * Math.random());
+      vals[i] = "This is val #" + i;
+    }
+
+    System.out.println("\n\n Printing the SkipList:");
+    sl2.insert(keys, vals);
+    sl2.insert(400, "My Key");
+    System.out.println(sl2);
+    System.out.println("sl2 size: " + sl2.size());
+    System.out.println("Testing out get(700): " + sl2.get(400));
+    System.out.printf("There were %d comparisons in the search", sl2.comparisons);
+    sl2.comparisons = 0;
+
+    System.out.println("\n\n---- About to Delete Key = 400 ---\n");
+
+    System.out.println(sl2.get(400));
+    sl2.delete(400);
+    System.out.println(sl2);
+    System.out.println("sl2 size: " + sl2.size());
+    for (int i = 0; i < keys.length; i++) {
+      System.out.println(sl2.get(keys[i]));
+    }
+  }
 }
