@@ -96,7 +96,7 @@ export class SkipListNode{
     public to2DArray(): (SkipListNode[][]) {
         let rows: SkipListNode[][] = [];
 
-        for (let i:number = this.nexts.length - 1; i >= 0; i--) {
+        for (let i: number = this.nexts.length - 1; i >= 0; i--) {
             let currentNode: SkipListNode = this;
             let col: SkipListNode[] = [];
             while (currentNode.type !== type.cap) {
@@ -106,9 +106,6 @@ export class SkipListNode{
             col.push(currentNode);
             rows.push(col);
         }
-
         return rows;
     }
-
-
 }

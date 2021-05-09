@@ -24,7 +24,7 @@ export class SkipListC implements SkipList{
         let animation:animationJson = {c1: curr, c2: null, "slState": this};
         this.animations.push(animation);
 
-        while(curr.getType() !== type.cap && i >= 0){ // check to see why adding second condition fixes this.
+        while(curr.getType() !== type.cap && i >= 0){
             if (curr.nexts[i].isLessKey(key)){
                 curr = curr.nexts[i];
             }

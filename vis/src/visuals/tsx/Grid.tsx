@@ -1,7 +1,7 @@
 import React from "react";
 import {SkipListC} from "../../skiplist/SkipListC";
 import Node from './Node';
-import {SkipListNode} from "../../skiplist/SkipListNode";
+import {SkipListNode, type} from "../../skiplist/SkipListNode";
 import {GetMethodResult} from "../../skiplist/SkipList";
 
 
@@ -24,9 +24,23 @@ class Grid extends React.Component<any, any>{
         this.setState({[e.target.name] : e.target.value, animations:[], search_result: null});
     }
 
-
     componentDidMount() {
         this.renderList();
+    }
+    skipGrid(){
+        return this.state.slArray.slice(0).reverse().map((row: SkipListNode[], rindex: number) => {
+            return (
+                <div className={"row m-0 p-0 justify-content-center"}>
+                    {
+                        row.map((col: SkipListNode, cindex: number) => {
+                            return (
+                                <div className={"col-auto p-0 m-0"}><Node node={col} r={rindex} c={cindex}/></div>
+                            )
+                        })
+                    }
+                </div>
+            )
+        })
     }
 
     animate(res: GetMethodResult){
@@ -50,24 +64,10 @@ class Grid extends React.Component<any, any>{
         this.setState({search_result: res.val === null ? "No Value Found": res.val});
     }
 
-    skipGrid(){
-        return this.state.slArray.slice(0).reverse().map((row: SkipListNode[], rindex: number) => {
-            return (
-                <div className={"row m-0 p-0 justify-content-center"}>
-                    {
-                        row.map((col: SkipListNode, cindex: number) => {
-                            return (
-                                <div className={"col-auto p-0 m-0"}><Node node={col} r={rindex} c={cindex}/></div>
-                            )
-                        })
-                    }
-                </div>
-            )
-        });
-    }
-
     handleSearch(){
-        let res:GetMethodResult = this.sl.get(this.state.search_key);
+        this.forceUpdate();
+        console.log("Should have updated the sl");
+        let res: GetMethodResult = this.sl.get(this.state.search_key);
         this.animate(res);
         this.setState({search_key: null});
     }
@@ -81,8 +81,9 @@ class Grid extends React.Component<any, any>{
             }
             this.sl.insert(key, key);
         }
-        let res:SkipListNode[][] = this.sl.to2DArray();
+        let res: SkipListNode[][] = this.sl.to2DArray();
         this.setState({slArray:res[0].map((_, colIndex) => res.map(row => row[colIndex]))}); // transpose rows to cols LA!
+        return this.skipGrid();
     }
 
     render(){
@@ -91,7 +92,7 @@ class Grid extends React.Component<any, any>{
                 <div className={"skiplist-form"}>
                     <h4>Graph Params</h4>
 
-                    <label>Number of Elements {this.state.size}</label><br/>
+                    <label>Number of Elements: {this.state.size}(20+ for larger screens)</label><br/>
 
                     {this.min}<input type="range" name="size" className="skiplist-form__range" id="range" onChange={this.onChangeVal} value={this.state.size} max={this.max} min={this.min}/>{this.max}<br/>
 
@@ -109,7 +110,7 @@ class Grid extends React.Component<any, any>{
 
                     <label>{this.state.search_key === "" && this.state.search_result === null ? "": "Search Result: " + this.state.search_result}</label><br/><br/><br/>
                 </div>
-                <div className={"container mx-auto skiplist"}>
+                <div ref="skiplist" className={"container-xxl mx-auto skiplist"}>
                     {this.skipGrid()}
                 </div>
             </div>

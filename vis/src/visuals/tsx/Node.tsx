@@ -35,14 +35,14 @@ function setText(node: SkipListNode){
 function setNode(node: SkipListNode | undefined, r:number, c: number): (JSX.Element){
     if (node === undefined){
         return (
-            <div id={`node-${r}`} className={"node-square"} style={{backgroundColor: `transparent`}}>
+            <div id={`null-${r}-${c}`} className={"node-square"} style={{backgroundColor: `transparent`}}>
                 <br className={"modified-b"}/>
                 <p className={"node-square__text"}>===={'>'}</p>
             </div>
         )
     }
     return (
-        <div id={`node-${node.getKey()}`} className={"node-square"} style={{backgroundColor:getColor(node)}}>
+        <div id={`node-${node.getKey()}`} className={`node-square node-${r}-${c}`} style={{backgroundColor:getColor(node)}}>
             <p className={"node-square__text"}>{setText(node)}</p>
         </div>
     )
