@@ -54,12 +54,17 @@ public class SeqNode<Key extends Comparable<Key>, Value> {
   }
 
   public boolean isLess(Key otherKey) {
-    if (this.type == Type.root)
+    System.out.println("\n +++++++++++ isLess just called. this.key is " + this.key + " with type = " + this.getType() + " | otherKey = " + otherKey);
+    if (this.type == Type.root) {
+      System.out.println("Branch 1");
       return true;
-    else if (this.type == Type.cap)
+    } else if (this.type == Type.cap) {
+      System.out.println("Branch 2");
       return false;
-    else
+    } else {
+      System.out.println("Branch 3");
       return this.key.compareTo(otherKey) < 0;
+    }
   }
 
   public boolean equals(Key otherKey) {
