@@ -7,52 +7,56 @@ public class SkipListLinkedC<Key extends Comparable<Key>, Value> implements Skip
 	private LinkedNode<Key, Value> terminus;
 	private int n;
 
-
+	// initialize an empty skiplist
 	public SkipListLinkedC() {
 		this.start = new LinkedNode<Key, Value>(LinkedNode.Type.root, 1);
 		this.terminus = new LinkedNode<Key, Value>(LinkedNode.Type.cap, 1);
-		this.start.setNext(terminus);
+		this.start.next = terminus;
 		this.n = 0;
 	}
 
-	private LinkedNode<Key, Value> search(Key key) {
-		LinkedNode<Key, Value> node = new LinkedNode<Key, Value>(key, null, LinkedNode.Type.node, 0);
-		LinkedNode<Key, Value> levelNode = start;
-		while (levelNode.getNext() != null) {
-			if (levelNode.getNext().getType() == LinkedNode.Type.cap) {
-				if (levelNode.getLevel() == 1)
-					break;
-				levelNode = levelNode.getBottom();
-			} else if (levelNode.getNext().isLess(node)) {
-				levelNode = levelNode.getNext();
-			} else if (levelNode.getNext().equals(node.getKey())) {
-				return levelNode.getNext();
-			} else {
-				levelNode = levelNode.getBottom() == null ? levelNode.getNext() : levelNode.getBottom();
-			}
-		}
-		throw new NoSuchElementException("No Value for " + key);
+	// initialize skiplist from array of keys/vals
+	public SkipListLinkedC(Key[] keys, Value[] vals) { // initialize from a list of keys and values
+		this();
+		this.insert(keys, vals);
 	}
 
-
+	// returns the corresponding value for specified key, if any
 	public Value get(Key key) {
 		return search(key).getValue();
 	}
 
+	// deletes a node if inside the list
 	public void delete(Key key) {
 		LinkedNode<Key, Value> top = search(key);
 		while (top != null && top.getLevel() > 0) {
-			LinkedNode<Key, Value> tmp = top.getBottom();
+			LinkedNode<Key, Value> tmp = top.bottom;
 			top.dettach();
 			top = tmp;
 		}
 		n--;
 	}
 
+	public boolean contains(Key key) {
+		try {
+			search(key);
+			return true;
+		} catch (NoSuchElementException e) {
+			return false;
+		}
+	}
+
+	// main insertion method for new nodes
 	public void insert(Key key, Value val) {
+		try {
+			LinkedNode<Key, Value> beginning = search(key); //returns the topmost matching value (if any)
+			beginning.replace(val); //updates that nodes children
+			return;
+		} catch (NoSuchElementException e) {
+		}
+
 		int l = randomLevel();
 		increaseEnds(l);
-
 		LinkedNode<Key, Value> levelNode = getLevel(l);
 		LinkedNode<Key, Value> tmp = new LinkedNode<Key, Value>(LinkedNode.Type.cap, levelNode.getLevel());
 
@@ -61,77 +65,57 @@ public class SkipListLinkedC<Key extends Comparable<Key>, Value> implements Skip
 			LinkedNode<Key, Value> backNode = levelNode;
 			LinkedNode<Key, Value> frontNode = terminus;
 
-			while (backNode.getNext() != null && backNode.getNext().isLess(node) && backNode.getNext().getType() != LinkedNode.Type.cap) {
-				backNode = backNode.getNext();
+			while (backNode.next != null && backNode.next.isLess(node) && backNode.next.getType() != LinkedNode.Type.cap) {
+				backNode = backNode.next;
 			}
 
-			if (backNode.getNext() != null)
-				frontNode = backNode.getNext();
+			if (backNode.next != null)
+				frontNode = backNode.next;
 
-			backNode.setNext(node);
-			node.setPrev(backNode);
+			backNode.next = node;
+			node.prev = backNode;
 
-			frontNode.setPrev(node);
-			node.setNext(frontNode);
+			frontNode.prev = node;
+			node.next = frontNode;
 
-			levelNode = levelNode.getBottom();
+			levelNode = levelNode.bottom;
 			if (tmp.getType() == LinkedNode.Type.cap) { //tmp is placeholder to enable stitching levels of nodes together.
 				tmp = node;
 				continue;
 			}
-			tmp.setBottom(node);
+			tmp.bottom = node;
 			tmp = node;
 		}
 		n++;
 	}
 
+	// insert arrays of keys and values
 	public void insert(Key[] keys, Value[] vals) {
 		if (keys.length != vals.length)
 			throw new IndexOutOfBoundsException("Invalid Input! Lengths must be the same.");
-		else
-			for (int i = 0; i < keys.length; i++)
-				insert(keys[i], vals[i]);
+		for (int i = 0; i < keys.length; i++) {
+			insert(keys[i], vals[i]);
+		}
 	}
 
-	public SkipListLinkedC(Key[] keys, Value[] vals) { // initialize from a list of keys and values
-		this();
-		this.insert(keys, vals);
-	}
-
+	// returns if skiplist is empty
 	public boolean isEmpty() {
 		return n == 0;
 	}
 
+	// number of elements in skiplist
 	public int size() {
 		return n;
 	}
 
-
-	// private methods
-
-	private LinkedNode<Key, Value> getLevel(int l) {
-		LinkedNode<Key, Value> level = start; //this will always be start node at max level
-		while (level.getLevel() > l)
-			level = level.getBottom(); //keep going down until we hit our entry point }
-		return level;
-	}
-
-	private int randomLevel() {
-		if (Math.random() < P)
-			return 1 + randomLevel();
-		else
-			return 1; // Min number is 1
-	}
-
-
 	@Override
 	public String toString() {
 		String s = "";
-		for (LinkedNode<Key, Value> level = start; level != null; level = level.getBottom()) {
+		for (LinkedNode<Key, Value> level = start; level != null; level = level.bottom) {
 			LinkedNode<Key, Value> currentNode = level;
 			while (currentNode.getType() != LinkedNode.Type.cap) {
-				s += "{" + currentNode.getKey() + ", " + currentNode.getValue() + ", " + currentNode.getLevel() + "} -->";
-				currentNode = currentNode.getNext();
+				s += "{" + currentNode.getKey() + ", " + currentNode.getValue() + "} -->";
+				currentNode = currentNode.next;
 			}
 			s += "{" + currentNode.getKey() + ", " + currentNode.getValue() + "}";
 			s += "\n";
@@ -139,57 +123,50 @@ public class SkipListLinkedC<Key extends Comparable<Key>, Value> implements Skip
 		return s;
 	}
 
+	// PRIVATE
+
+	// search helper for get and delete methods
+	private LinkedNode<Key, Value> search(Key key) {
+		LinkedNode<Key, Value> levelNode = start;
+		while (levelNode.next != null) {
+			if (levelNode.next.getType() == LinkedNode.Type.cap) {
+				if (levelNode.getLevel() == 1)
+					break;
+				levelNode = levelNode.bottom;
+			} else if (levelNode.next.isLess(key)) {
+				levelNode = levelNode.next;
+			} else if (levelNode.next.equals(key)) {
+				return levelNode.next;
+			} else {
+				levelNode = levelNode.bottom == null ? levelNode.next : levelNode.bottom;
+			}
+		}
+		throw new NoSuchElementException("No Value for " + key);
+	}
+
+	// get the start node at the generated level for inserting a node
+	private LinkedNode<Key, Value> getLevel(int l) {
+		LinkedNode<Key, Value> level = start; //this will always be start node at max level
+		while (level.getLevel() > l)
+			level = level.bottom; //keep going down until we hit our entry point }
+		return level;
+	}
+
+	// generates a new random level for an insert node
+	private int randomLevel() {
+		if (Math.random() < P)
+			return 1 + randomLevel();
+		return 1; // Min number is 1
+	}
+
+	// builds up the start and terminus nodes to match the generated height of a new node
 	private void increaseEnds(int l) {
 		while (l > start.getLevel()) {
 			LinkedNode<Key, Value> startLevel = new LinkedNode<Key, Value>(start, null, null, null, null, LinkedNode.Type.root, start.getLevel() + 1);
 			LinkedNode<Key, Value> termLevel = new LinkedNode<Key, Value>(terminus, startLevel, null, null, null, LinkedNode.Type.cap, startLevel.getLevel() + 1);
-			startLevel.setNext(termLevel);
+			startLevel.next = (termLevel);
 			start = startLevel;
 			terminus = termLevel;
 		}
-	}
-
-
-	// testing/main method
-
-	public static void main(String[] args) {
-		Integer[] keys = {93, 91, 49, 69, 80, 99, 100, 101};
-		String[] vals = {"Turing", "Julie", "Jacob", "James", "Jack", "Julian", "Djikstra", "Jesse"};
-		System.out.println("TESTING INSERT\n");
-		SkipListLinkedC<Integer, String> sl = new SkipListLinkedC<Integer, String>(keys, vals);
-		System.out.println(sl);
-		System.out.println("\nEND TESTING INSERT");
-
-		System.out.println("TESTING GET\n");
-		for (int i = 0; i < keys.length; i++) {
-			System.out.println(vals[i].equals(sl.get(keys[i])) ? ("TEST " + keys[i] + " PASSED") : ("TEST " + keys[i] + " FAILED!!!!!!!!!!!!!!!!!!"));
-		}
-		System.out.println("\nTESTING GET END");
-
-		System.out.println("DELETING");
-		for (int i = 0; i < keys.length; i++) {
-			sl.delete(keys[i]);
-		}
-		System.out.println(sl);
-		System.out.println("CONFIRMING DELETE\n");
-		System.out.println((sl.size() == 0) + ", Size: " + sl.size());
-		System.out.println(sl);
-
-		for (int i = 0; i < keys.length; i++) {
-			try {
-				String res = sl.get(keys[i]);
-				System.out.println("TEST FAILD:" + res);
-			} catch (NoSuchElementException e) {
-				System.out.println("TEST PASSED!");
-			}
-		}
-		System.out.println("\nCONFIRMING DELETE END");
-		System.out.println(sl);
-		SkipListLinkedC<Integer, Integer> sl2 = new SkipListLinkedC<Integer, Integer>();
-		for (int i = 0; i < 30; i++) {
-			int key = (int) Math.floor(Math.random() * 100);
-			sl2.insert(key, key);
-		}
-		System.out.println(sl2.size());
 	}
 }

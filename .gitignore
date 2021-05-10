@@ -23,4 +23,5 @@
 hs_err_pid*
 
 .idea
+vis/build
 .DS_Store

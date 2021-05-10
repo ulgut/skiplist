@@ -2,8 +2,8 @@ import java.util.ArrayList;
 
 public class SeqNode<Key extends Comparable<Key>, Value> {
 
-	public ArrayList<SeqNode<Key, Value>> prevs; //make private with accessor methods
-	public ArrayList<SeqNode<Key, Value>> nexts; //make private with accessor methods
+	public ArrayList<SeqNode<Key, Value>> prevs;
+	public ArrayList<SeqNode<Key, Value>> nexts;
 
 	private Key key;
 	private Value value;
@@ -44,40 +44,27 @@ public class SeqNode<Key extends Comparable<Key>, Value> {
 		this(Type.node);
 	}
 
-	public boolean isLess(SeqNode<Key, Value> other) {
-		if (this.type == Type.root)
-			return true;
-		else if (this.type == Type.cap)
-			return false;
-		else
-			return this.key.compareTo(other.key) < 0;
-	}
 
 	public boolean isLess(Key otherKey) {
 		if (this.type == Type.root)
 			return true;
 		else if (this.type == Type.cap)
 			return false;
-		else
-			return this.key.compareTo(otherKey) < 0;
+		return this.key.compareTo(otherKey) < 0;
 	}
 
 	public boolean equals(Key otherKey) {
 		if (this.key == null)
 			return false;
-		else {
-			return this.key.compareTo(otherKey) == 0;
-		}
+		return this.key.compareTo(otherKey) == 0;
 	}
 
 	public int height() {
 		return nexts.size();
 	}
 
-	//rewrite with recursion
 	@Override
 	public String toString() {
-
 		String str = "";
 
 		for (int i = nexts.size() - 1; i >= 0; i--) {
@@ -87,10 +74,15 @@ public class SeqNode<Key extends Comparable<Key>, Value> {
 				str += "{" + currentNode.key + ", " + currentNode.value + "} --> ";
 				currentNode = currentNode.nexts.get(i);
 			}
+			str += "{" + currentNode.getKey() + ", " + currentNode.getValue() + "}";
 			str += "\n";
 		}
 
 		return str;
+	}
+
+	public Key getKey() {
+		return key;
 	}
 
 	public Value getValue() {

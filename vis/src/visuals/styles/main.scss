@@ -1,0 +1,55 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@500&display=swap');
+$base-font: 'Roboto';
+html{
+  font-family: $base-font;
+  //background-color:lightslategray;
+}
+/* Main Page Styling */
+.header{
+  text-align: center;
+  font-size: 30px;
+}
+/* Main Page Styling End */
+
+/* Grid Styling */
+
+.skiplist-form{
+  margin-top: 100px;
+  text-align: center;
+}
+
+.skiplist{
+  margin: 0;
+  padding: 0;
+}
+
+.modified-b{
+  line-height: 20px;
+}
+
+.node-square{
+  color: black;
+  margin: 10px;
+  width:60px;
+  height:60px;
+  outline: black solid 2px;
+  &__text{
+    text-align: center;
+  }
+  @media only screen and (max-width : 400px) {
+    width: 30px;
+    height: 30px;
+    margin: 0;
+    font-size:8px;
+  }
+}
+.color-box{
+  &-purple{
+    color:white;
+    background-color: purple;
+  }
+  &-blue{
+    color:white;
+    background-color: blue;
+  }
+}
